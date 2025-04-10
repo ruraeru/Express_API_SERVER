@@ -11,7 +11,9 @@ const app = express();
 
 // 디버깅을 위한 미들웨어
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
     next();
 });
 
@@ -23,8 +25,8 @@ app.use(cors({
 
 // 라우터 연결
 app.use('/api/users', userRoutes);
-// app.use('/api/products', productRoutes);
-// app.use('/api/posts', postRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/posts', postRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: "API 서버가 정상적으로 실행 중입니다." });

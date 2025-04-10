@@ -48,19 +48,55 @@ router.get("/users/:id", async (req, res) => {
 });
 
 // 사용자 생성
-router.post("/users", async (req, res) => {
-    console.log("POST /api/users 요청 받음, body:", req.query);
-    const { name, email } = req.body;
+router.post("/", async (req, res) => {
+    console.log("POST /api/users 요청 받음, body:", req.body);
+    const { username, email, password, phone } = req.body;
+
+    // 필수 필드 검증
+    if (!username || !email) {
+        return res.status(400).json({
+            success: false,
+            error: "username과 email은 필수 필드입니다."
+        });
+    }
+
     try {
-        const [result] = await query(
-            "INSERT INTO users (name, email) VALUES (?, ?)",
-            [name, email]
+        // 중복 체크
+        const existingUsers = await query(
+            "SELECT * FROM User WHERE username = ? OR email = ?",
+            [username, email]
         );
-        console.log("생성된 사용자:", { id: result.insertId, name, email });
-        res.status(201).json({ id: result.insertId, name, email });
+
+        if (existingUsers && existingUsers.length > 0) {
+            const duplicateField = existingUsers[0].username === username ? 'username' : 'email';
+            return res.status(400).json({
+                success: false,
+                error: `이미 사용 중인 ${duplicateField}입니다.`
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password || 'default', 10);
+        const result = await query(
+            "INSERT INTO User (username, email, password, phone) VALUES (?, ?, ?, ?)",
+            [username, email, hashedPassword, phone || null]
+        );
+        console.log("생성된 사용자:", { id: result.insertId, username, email });
+        res.status(201).json({ 
+            success: true,
+            data: { id: result.insertId, username, email } 
+        });
     } catch (error) {
         console.error("에러 발생:", error);
-        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({
+                success: false,
+                error: "이미 사용 중인 username 또는 email입니다."
+            });
+        }
+        res.status(500).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 });
 
