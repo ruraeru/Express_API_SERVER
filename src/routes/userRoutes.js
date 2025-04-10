@@ -50,7 +50,7 @@ router.get("/users/:id", async (req, res) => {
 // 사용자 생성
 router.post("/users", async (req, res) => {
     console.log("POST /api/users 요청 받음, body:", req.query);
-    const { name, email } = req.query;
+    const { name, email } = req.body;
     try {
         const [result] = await query(
             "INSERT INTO users (name, email) VALUES (?, ?)",

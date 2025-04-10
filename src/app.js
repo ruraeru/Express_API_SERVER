@@ -17,14 +17,14 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: '*',
     credentials: true,
 }));
 
 // 라우터 연결
 app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/posts', postRoutes);
+// app.use('/api/products', productRoutes);
+// app.use('/api/posts', postRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: "API 서버가 정상적으로 실행 중입니다." });
@@ -35,6 +35,8 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: '서버 에러가 발생했습니다.' });
 });
+
+import { query } from "./database/db.js";
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
