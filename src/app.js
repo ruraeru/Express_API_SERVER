@@ -12,8 +12,6 @@ const app = express();
 // 디버깅을 위한 미들웨어
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
     next();
 });
 
@@ -37,8 +35,6 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: '서버 에러가 발생했습니다.' });
 });
-
-import { query } from "./database/db.js";
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

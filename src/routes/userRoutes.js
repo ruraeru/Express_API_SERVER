@@ -81,9 +81,9 @@ router.post("/", async (req, res) => {
             [username, email, hashedPassword, phone || null]
         );
         console.log("생성된 사용자:", { id: result.insertId, username, email });
-        res.status(201).json({ 
+        res.status(201).json({
             success: true,
-            data: { id: result.insertId, username, email } 
+            data: { id: result.insertId, username, email }
         });
     } catch (error) {
         console.error("에러 발생:", error);
@@ -93,9 +93,9 @@ router.post("/", async (req, res) => {
                 error: "이미 사용 중인 username 또는 email입니다."
             });
         }
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            error: error.message 
+            error: error.message
         });
     }
 });
